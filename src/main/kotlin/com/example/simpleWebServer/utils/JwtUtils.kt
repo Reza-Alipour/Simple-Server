@@ -1,6 +1,5 @@
 package com.example.simpleWebServer.utils
 
-import com.example.simpleWebServer.dto.UserDTO
 import com.example.simpleWebServer.entity.User
 import com.example.simpleWebServer.repository.UserRepository
 import io.jsonwebtoken.Claims
@@ -27,41 +26,24 @@ class JwtUtils : Serializable {
     }
 
 
-    private fun isTokenExpired(token: String): Boolean {
-        val expiration: Date = getTokenBody(token).expiration
-        return expiration.before(Date())
+    private fun isTokenTimeValid(tokenClaims: Claims): Boolean {
+        return tokenClaims.expiration.before(Date())
     }
 
     fun generateToken(userId: Long): String {
-        return Jwts.builder()
-            .setIssuer(userId.toString())
-            .setIssuedAt(Date(System.currentTimeMillis()))
+        return Jwts.builder().setIssuer(userId.toString()).setIssuedAt(Date(System.currentTimeMillis()))
             .setExpiration(Date(System.currentTimeMillis() + JWT_TOKEN_VALIDITY))
             .signWith(SignatureAlgorithm.HS512, secret).compact()
     }
 
-    fun generateToken(user: UserDTO): String {
-        return Jwts.builder()
-            .setIssuer(user.id.toString())
-            .setIssuedAt(Date(System.currentTimeMillis()))
-            .setExpiration(Date(System.currentTimeMillis() + JWT_TOKEN_VALIDITY))
-            .signWith(SignatureAlgorithm.HS512, secret).compact()
-    }
-
-    fun validateToken(token: String, user: UserDTO): Boolean {
-        return getTokenBody(token).issuer == user.id.toString()
-    }
-
-    fun validateToken(token: String, userId: Long): Boolean {
-        return getTokenBody(token).issuer == userId.toString()
-    }
-
-    fun getUserId(token: String): Long {
-        return getTokenBody(token).issuer.toLong()
+    fun getUserId(token: String): Long? {
+        return getTokenBody(token).let {
+            if (isTokenTimeValid(it)) it.issuer.toLong() else null
+        }
     }
 
     fun getUser(token: String): User? {
-        return userRepository.findById(getUserId(token)).orElse(null)
+        return getUserId(token)?.let { userRepository.findById(it).orElse(null) }
     }
 
 
