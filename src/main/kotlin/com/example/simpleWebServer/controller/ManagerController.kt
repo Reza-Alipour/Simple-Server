@@ -20,8 +20,8 @@ class ManagerController {
 
     @PostMapping("approveAdmin")
     fun approveAdmin(@RequestParam userId: Long, @CookieValue("jwt") jwt: String): ResponseEntity<String> {
-        if (!commonUtils.isManager(jwt))
-            return ResponseEntity.status(401).body("You are not authorized to perform this action")
+        if (!commonUtils.isManager(jwt)) return ResponseEntity.status(401)
+            .body("You are not authorized to perform this action")
 
         return userService.approveAdmin(userId)
     }

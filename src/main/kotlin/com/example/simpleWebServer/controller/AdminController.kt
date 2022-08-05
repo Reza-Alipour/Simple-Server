@@ -37,7 +37,7 @@ class AdminController {
 
     @PostMapping("unStrike")
     fun unStrike(@RequestParam userId: Long, @CookieValue("jwt") jwt: String): ResponseEntity<String> {
-        commonUtils.getUserWithAdminRole(jwt)?:return ResponseEntity.status(401).body("You are not admin")
+        commonUtils.getUserWithAdminRole(jwt) ?: return ResponseEntity.status(401).body("You are not admin")
         return userService.unStrike(userId)
     }
 }

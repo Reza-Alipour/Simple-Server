@@ -24,8 +24,7 @@ class UploadController {
             return ResponseEntity.status(403).body("You are banned")
         }
         return try {
-            fileStorageService.store(file, user)
-            ResponseEntity.ok().body("File uploaded successfully!")
+            return fileStorageService.store(file, user)
         } catch (e: Exception) {
             ResponseEntity.internalServerError().body("Could not upload file: " + e.message)
         }

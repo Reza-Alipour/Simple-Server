@@ -3,6 +3,7 @@ package com.example.simpleWebServer.controller
 import com.example.simpleWebServer.dto.LoginDTO
 import com.example.simpleWebServer.service.UserService
 import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.CookieValue
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -26,5 +27,13 @@ class LoginController(private val userService: UserService) {
         cookie.maxAge = COOKIE_MAX_AGE
         response.addCookie(cookie)
         return ResponseEntity.ok("Login successful")
+    }
+
+    @PostMapping("logout")
+    fun logout(@CookieValue("jwt") jwt: String, response: HttpServletResponse): ResponseEntity<String> {
+        val cookie = Cookie("jwt", "")
+        cookie.maxAge = 0
+        response.addCookie(cookie)
+        return ResponseEntity.ok("Logout successful")
     }
 }
