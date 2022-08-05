@@ -10,7 +10,7 @@ class Comment(
     @ManyToOne(fetch = FetchType.LAZY) var user: User,
     @ManyToOne(fetch = FetchType.LAZY) var video: Video,
     @Id @GeneratedValue var id: Long? = null
-):ToDTO {
+) : ToDTO {
 
     constructor() : this("", User(), Video())
 

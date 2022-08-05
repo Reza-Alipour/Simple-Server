@@ -53,8 +53,5 @@ class User(
 }
 
 enum class RoleType {
-    ADMIN_PENDING,
-    ADMIN,
-    MANAGER,
-    USER
+    ADMIN_PENDING, ADMIN, MANAGER, USER
 }

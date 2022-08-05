@@ -5,19 +5,12 @@ import javax.persistence.*
 
 @Entity
 class Ticket(
-    req: String,
-    response: String? = null,
-    state: TicketState = TicketState.OPEN,
-    @Id @GeneratedValue var id: Long? = null,
+    @ManyToOne var user: User, var state: TicketState = TicketState.OPEN, @Id @GeneratedValue var id: Long? = null
 ) : ToDTO {
+    constructor() : this(User())
 
-    constructor() : this("")
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    var user:User? = null
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    var admin:User? = null
+    @ElementCollection(fetch = FetchType.LAZY)
+    var messages: MutableList<Pair<User, String>> = mutableListOf()
 
 
     override fun toDTO(): DTO {
@@ -27,8 +20,5 @@ class Ticket(
 }
 
 enum class TicketState {
-    OPEN,
-    CLOSED,
-    IN_PROGRESS,
-    RESOLVED
+    OPEN, CLOSED, IN_PROGRESS, RESOLVED
 }

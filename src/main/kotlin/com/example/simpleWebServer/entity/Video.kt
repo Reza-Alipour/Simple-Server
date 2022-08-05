@@ -7,7 +7,7 @@ import javax.persistence.*
 class Video(
     var name: String,
     var type: String,
-    @Basic(fetch = FetchType.LAZY) var bytes: ByteArray,
+    @Basic(fetch = FetchType.LAZY) @Lob var bytes: ByteArray,
     @ManyToOne(fetch = FetchType.LAZY) var user: User,
     @Id @GeneratedValue var id: Long? = null,
 ) : ToDTO {
