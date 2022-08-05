@@ -11,21 +11,19 @@ import org.springframework.stereotype.Service
 
 @Service
 class UserService(
-    private val userRepository: UserRepository,
-    private val jwtService: JwtUtils
+    private val userRepository: UserRepository, private val jwtService: JwtUtils
 ) {
     fun createUser(registrationDto: UserRegistrationDTO): User {
         val user = User()
         user.username = registrationDto.username
         user.passwordHash = registrationDto.password
-        user.role = if (registrationDto.role == RoleTypeDTO.USER) RoleType.USER else RoleType.ADMIN
+        user.role = if (registrationDto.role == RoleTypeDTO.USER) RoleType.USER else RoleType.ADMIN_PENDING
         return userRepository.save(user)
     }
 
     fun login(username: String, password: String): String? {
         val user = userRepository.findByUsername(username) ?: return null
-        if (!user.comparePasswrd(password))
-            return null
+        if (!user.comparePasswrd(password)) return null
         return user.id?.let { jwtService.generateToken(it) }
     }
 
@@ -35,8 +33,7 @@ class UserService(
             user.strike = false
             userRepository.save(user)
             ResponseEntity.ok("Done")
-        } else
-            ResponseEntity.status(400).body("User is not strike")
+        } else ResponseEntity.status(400).body("User is not strike")
     }
 
     fun approveAdmin(userId: Long): ResponseEntity<String> {
