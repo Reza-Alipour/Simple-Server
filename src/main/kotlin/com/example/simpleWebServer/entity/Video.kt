@@ -1,13 +1,14 @@
 package com.example.simpleWebServer.entity
 
 import com.example.simpleWebServer.dto.DTO
+import com.example.simpleWebServer.dto.VideoDTO
 import javax.persistence.*
 
 @Entity
 class Video(
     var name: String,
     var type: String,
-    @Basic(fetch = FetchType.LAZY) @Lob var bytes: ByteArray,
+    @Basic(fetch = FetchType.LAZY) @Lob var bytes: ByteArray?,
     @ManyToOne(fetch = FetchType.LAZY) var user: User,
     @Id @GeneratedValue var id: Long? = null,
 ) : ToDTO {
@@ -25,8 +26,11 @@ class Video(
     var userIthVideo: Int = 0
     var banned: Boolean = false
 
+    @Column(name="video_views")
+    var views: Int = 0
 
-    override fun toDTO(): DTO {
-        TODO("Not yet implemented")
+
+    override fun toDTO(): VideoDTO {
+        return VideoDTO(this.name, this.id!!)
     }
 }

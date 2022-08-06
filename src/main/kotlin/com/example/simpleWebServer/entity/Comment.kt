@@ -1,5 +1,6 @@
 package com.example.simpleWebServer.entity
 
+import com.example.simpleWebServer.dto.CommentDTO
 import com.example.simpleWebServer.dto.DTO
 import javax.persistence.*
 
@@ -14,7 +15,7 @@ class Comment(
 
     constructor() : this("", User(), Video())
 
-    override fun toDTO(): DTO {
-        TODO("Not yet implemented")
+    override fun toDTO(): CommentDTO {
+        return CommentDTO(comment = this.text, username = this.user.username)
     }
 }

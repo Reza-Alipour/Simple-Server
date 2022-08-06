@@ -21,10 +21,10 @@ class UserService(
         return userRepository.save(user)
     }
 
-    fun login(username: String, password: String): String? {
+    fun login(username: String, password: String): Pair<String, String>? {
         val user = userRepository.findByUsername(username) ?: return null
         if (!user.comparePasswrd(password)) return null
-        return user.id?.let { jwtService.generateToken(it) }
+        return Pair(user.id?.let { jwtService.generateToken(it) } ?: return null, user.role.name)
     }
 
     fun unStrike(userId: Long): ResponseEntity<String> {

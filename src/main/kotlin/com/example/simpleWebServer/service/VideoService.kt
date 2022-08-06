@@ -1,5 +1,6 @@
 package com.example.simpleWebServer.service
 
+import com.example.simpleWebServer.dto.CommentDTO
 import com.example.simpleWebServer.entity.Comment
 import com.example.simpleWebServer.entity.User
 import com.example.simpleWebServer.repository.CommentRepository
@@ -51,9 +52,7 @@ class VideoService(
         val video = commonUtils.getVideoById(videoId) ?: return ResponseEntity.notFound().build()
         video.banned = true
         if (videoRepository.existsVideoByUserAndUserIthVideoAndBanned(
-                video.user,
-                video.userIthVideo - 1,
-                true
+                video.user, video.userIthVideo - 1, true
             ) || videoRepository.existsVideoByUserAndUserIthVideoAndBanned(video.user, video.userIthVideo + 1, true)
         ) {
             video.user.strike = true
@@ -61,6 +60,10 @@ class VideoService(
         }
         videoRepository.save(video)
         return ResponseEntity.ok("Video banned")
+    }
+
+    fun getComments(videoId: Long): ResponseEntity<List<String>> {
+        return ResponseEntity.ok(commonUtils.getCommentsByVideo(videoId))
     }
 
 }
