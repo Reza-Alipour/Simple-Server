@@ -27,7 +27,7 @@ class JwtUtils : Serializable {
 
 
     private fun isTokenTimeValid(tokenClaims: Claims): Boolean {
-        return tokenClaims.expiration.before(Date())
+        return tokenClaims.expiration.after(Date())
     }
 
     fun generateToken(userId: Long): String {

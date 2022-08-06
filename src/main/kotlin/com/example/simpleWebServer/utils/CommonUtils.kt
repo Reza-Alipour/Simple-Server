@@ -1,12 +1,13 @@
 package com.example.simpleWebServer.utils
 
-import com.example.simpleWebServer.entity.RoleType
-import com.example.simpleWebServer.entity.Ticket
-import com.example.simpleWebServer.entity.User
-import com.example.simpleWebServer.entity.Video
+import com.example.simpleWebServer.entity.*
+import com.example.simpleWebServer.repository.CommentRepository
 import com.example.simpleWebServer.repository.TicketRepository
 import com.example.simpleWebServer.repository.VideoRepository
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Pageable
+import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Component
 
 @Component
@@ -19,6 +20,9 @@ class CommonUtils {
 
     @Autowired
     private lateinit var ticketRepository: TicketRepository
+
+    @Autowired
+    private lateinit var commentRepository: CommentRepository
 
 
     fun isAdmin(jwt: String): Boolean {
@@ -57,5 +61,14 @@ class CommonUtils {
 
     fun getTicket(id: Long): Ticket? {
         return ticketRepository.findById(id).orElse(null)
+    }
+
+    fun getVideos(pageNo: Int, pageSize: Int): List<Video> {
+        val paging: Pageable = PageRequest.of(pageNo, pageSize, Sort.by("views"))
+        return videoRepository.findAll(paging).toList()
+    }
+
+    fun getCommentsByVideo(videoId: Long): List<String> {
+        return commentRepository.funcP(videoId)
     }
 }
