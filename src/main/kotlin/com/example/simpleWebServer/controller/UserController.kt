@@ -31,9 +31,16 @@ class UserController {
     }
 
     @PostMapping("comment")
-    fun comment(@RequestParam commentDTO: CommentDTO, @CookieValue("jwt") jwt: String): ResponseEntity<String> {
+    fun comment(@RequestBody commentDTO: CommentDTO, @CookieValue("jwt") jwt: String): ResponseEntity<String> {
         val user = commonUtils.getUserWithUserRole(jwt) ?: return ResponseEntity.status(401).body("Unauthorized")
-        return videoService.comment(commentDTO.comment, user, commentDTO.videoId)
+        return commentDTO.videoId?.let { videoService.comment(commentDTO.comment, user, it) } ?: ResponseEntity.status(
+            400
+        ).body("Video id is required")
+    }
+
+    @GetMapping("comments")
+    fun comments(@RequestParam videoId: Long): ResponseEntity<List<String>> {
+        return videoService.getComments(videoId)
     }
 }
 

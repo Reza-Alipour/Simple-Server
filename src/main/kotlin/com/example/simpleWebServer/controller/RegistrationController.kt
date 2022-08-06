@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@RequestMapping("/register")
+@RequestMapping("register")
 class RegistrationController(private val userService: UserService) {
     @PostMapping
     fun registerUserAccount(@RequestBody registrationDto: UserRegistrationDTO): ResponseEntity<String> {

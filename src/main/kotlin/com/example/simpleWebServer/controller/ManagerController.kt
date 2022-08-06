@@ -4,12 +4,10 @@ import com.example.simpleWebServer.service.UserService
 import com.example.simpleWebServer.utils.CommonUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.CookieValue
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestParam
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 
 @RestController
+@RequestMapping("manager")
 class ManagerController {
 
     @Autowired

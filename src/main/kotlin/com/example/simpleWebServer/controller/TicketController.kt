@@ -12,7 +12,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
 @RestController
-@RequestMapping("/ticket")
+@RequestMapping("ticket")
 class TicketController {
 
     @Autowired
@@ -22,7 +22,7 @@ class TicketController {
     private lateinit var ticketRepository: TicketRepository
 
 
-    @PostMapping("/create")
+    @PostMapping("create")
     fun createTicket(@RequestBody ticket: TicketDTO, @CookieValue("jwt") jwt: String): ResponseEntity<String> {
         val user = commonUtils.getUser(jwt) ?: return ResponseEntity.status(401).body("Unauthorized")
         if (user.role == RoleType.ADMIN_PENDING || user.role == RoleType.MANAGER) {
@@ -34,7 +34,7 @@ class TicketController {
         return ResponseEntity.ok("Ticket created")
     }
 
-    @PostMapping("/addMessage")
+    @PostMapping("addMessage")
     fun addMessageToTicket(@RequestBody ticketDto: TicketDTO, @CookieValue("jwt") jwt: String): ResponseEntity<String> {
         val user = commonUtils.getUser(jwt) ?: return ResponseEntity.status(401).body("Unauthorized")
         val ticket: Ticket = ticketDto.id?.let {
