@@ -1,10 +1,8 @@
 package com.example.simpleWebServer.controller
 
 import com.example.simpleWebServer.dto.TicketDTO
-import com.example.simpleWebServer.entity.RoleType
-import com.example.simpleWebServer.entity.Ticket
-import com.example.simpleWebServer.entity.TicketState
-import com.example.simpleWebServer.entity.User
+import com.example.simpleWebServer.entity.*
+import com.example.simpleWebServer.repository.MessagePairRepository
 import com.example.simpleWebServer.repository.TicketRepository
 import com.example.simpleWebServer.utils.CommonUtils
 import org.springframework.beans.factory.annotation.Autowired
@@ -21,6 +19,9 @@ class TicketController {
     @Autowired
     private lateinit var ticketRepository: TicketRepository
 
+    @Autowired
+    private lateinit var messagePairRepository: MessagePairRepository
+
 
     @PostMapping("create")
     fun createTicket(@RequestBody ticket: TicketDTO, @CookieValue("jwt") jwt: String): ResponseEntity<String> {
@@ -29,8 +30,7 @@ class TicketController {
             return ResponseEntity.status(403).body("Forbidden")
         }
         val newTicket = Ticket(user)
-        newTicket.messages.add(Pair(user, ticket.message))
-        ticketRepository.save(newTicket)
+        addMessageToTicket(newTicket, user, ticket.message)
         return ResponseEntity.ok("Ticket created")
     }
 
@@ -59,7 +59,7 @@ class TicketController {
         } ?: return ResponseEntity.status(400).body("Ticket not found")
 
         val newState = ticketDto.state ?: return ResponseEntity.status(400).body("Please provide new state")
-        if (newState == TicketState.CLOSED) return ResponseEntity.status(403).body("Ticket closed")
+        if (ticket.state == TicketState.CLOSED) return ResponseEntity.status(403).body("Ticket is already closed")
 
         return if ((ticket.user.role == RoleType.USER && user.role == RoleType.ADMIN) || (ticket.user.role == RoleType.ADMIN && user.role == RoleType.MANAGER)) {
             ticket.state = newState
@@ -68,9 +68,21 @@ class TicketController {
         } else ResponseEntity.status(403).body("Forbidden")
     }
 
+    @GetMapping("getAll")
+    private fun getTickets(@CookieValue("jwt") jwt: String): ResponseEntity<List<TicketDTO>> {
+        val tickets: List<Ticket> = commonUtils.getTickets(jwt) ?: return ResponseEntity.status(401).body(emptyList())
+        return ResponseEntity.ok().body(tickets.map { it.toDTO() })
+    }
+
+    @GetMapping("get")
+    private fun getTicket(@RequestParam id: Long, @CookieValue("jwt") jwt: String): ResponseEntity<TicketDTO> {
+        val messagePairs = messagePairRepository.getAllByTicketId(id)
+        return ResponseEntity.ok()
+            .body(TicketDTO("", id, null, messagePairs.map { Pair(it.user.username, it.message) }))
+    }
 
     private fun addMessageToTicket(ticket: Ticket, user: User, message: String) {
-        ticket.messages.add(Pair(user, message))
-        ticketRepository.save(ticket)
+        val messagePair = MessagePair(user, message, ticket)
+        messagePairRepository.save(messagePair)
     }
 }

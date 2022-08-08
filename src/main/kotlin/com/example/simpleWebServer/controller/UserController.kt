@@ -42,6 +42,12 @@ class UserController {
     fun comments(@RequestParam videoId: Long): ResponseEntity<List<String>> {
         return videoService.getComments(videoId)
     }
+
+
+    @GetMapping("getPath")
+    fun getPath(@RequestParam videoId: Long): ResponseEntity<String> {
+        return videoService.getPath(videoId)
+    }
 }
 
 

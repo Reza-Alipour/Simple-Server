@@ -1,13 +1,13 @@
 package com.example.simpleWebServer.utils
 
-import com.example.simpleWebServer.entity.*
+import com.example.simpleWebServer.entity.RoleType
+import com.example.simpleWebServer.entity.Ticket
+import com.example.simpleWebServer.entity.User
+import com.example.simpleWebServer.entity.Video
 import com.example.simpleWebServer.repository.CommentRepository
 import com.example.simpleWebServer.repository.TicketRepository
 import com.example.simpleWebServer.repository.VideoRepository
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.data.domain.PageRequest
-import org.springframework.data.domain.Pageable
-import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Component
 
 @Component
@@ -39,6 +39,12 @@ class CommonUtils {
         }
     }
 
+    fun getUserWithAdminOrManagerRole(jwt: String): User? {
+        return getUser(jwt)?.let {
+            if (it.role == RoleType.ADMIN || it.role == RoleType.MANAGER) it else null
+        }
+    }
+
     fun getUserWithUserRole(jwt: String): User? {
         return getUser(jwt)?.let {
             if (it.role == RoleType.USER) it else null
@@ -63,12 +69,17 @@ class CommonUtils {
         return ticketRepository.findById(id).orElse(null)
     }
 
-    fun getVideos(pageNo: Int, pageSize: Int): List<Video> {
-        val paging: Pageable = PageRequest.of(pageNo, pageSize, Sort.by("views"))
-        return videoRepository.findAll(paging).toList()
-    }
-
     fun getCommentsByVideo(videoId: Long): List<String> {
         return commentRepository.funcP(videoId)
+    }
+
+    fun getTickets(jwt: String): List<Ticket>? {
+        val user = jwtUtils.getUser(jwt) ?: return null
+        return when (user.role) {
+            RoleType.USER -> ticketRepository.findAllByUser(user)
+            RoleType.ADMIN -> ticketRepository.findAllByUserOrUserRole(user, RoleType.USER)
+            RoleType.MANAGER -> ticketRepository.findAllByUserRole(RoleType.ADMIN)
+            else -> null
+        }
     }
 }

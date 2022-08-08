@@ -1,6 +1,5 @@
 package com.example.simpleWebServer.service
 
-import com.example.simpleWebServer.dto.CommentDTO
 import com.example.simpleWebServer.entity.Comment
 import com.example.simpleWebServer.entity.User
 import com.example.simpleWebServer.repository.CommentRepository
@@ -64,6 +63,11 @@ class VideoService(
 
     fun getComments(videoId: Long): ResponseEntity<List<String>> {
         return ResponseEntity.ok(commonUtils.getCommentsByVideo(videoId))
+    }
+
+    fun getPath(videoId: Long): ResponseEntity<String> {
+        val video = videoRepository.findById(videoId).get()
+        return ResponseEntity.ok("/${video.user.username}/${video.name}")
     }
 
 }

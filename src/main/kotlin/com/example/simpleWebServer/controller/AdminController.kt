@@ -1,6 +1,7 @@
 package com.example.simpleWebServer.controller
 
 import com.example.simpleWebServer.dto.TagDTO
+import com.example.simpleWebServer.dto.UserDTO
 import com.example.simpleWebServer.service.UserService
 import com.example.simpleWebServer.service.VideoService
 import com.example.simpleWebServer.utils.CommonUtils
@@ -39,5 +40,11 @@ class AdminController {
     fun unStrike(@RequestParam userId: Long, @CookieValue("jwt") jwt: String): ResponseEntity<String> {
         commonUtils.getUserWithAdminRole(jwt) ?: return ResponseEntity.status(401).body("You are not admin")
         return userService.unStrike(userId)
+    }
+
+    @GetMapping("users")
+    fun getUsers(@CookieValue("jwt") jwt: String): ResponseEntity<List<UserDTO>> {
+        val a = commonUtils.getUserWithAdminOrManagerRole(jwt) ?: return ResponseEntity.status(401).body(listOf())
+        return ResponseEntity.ok(userService.getUsers(a.role))
     }
 }
