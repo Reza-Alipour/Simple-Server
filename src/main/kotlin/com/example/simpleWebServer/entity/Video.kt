@@ -1,6 +1,5 @@
 package com.example.simpleWebServer.entity
 
-import com.example.simpleWebServer.dto.DTO
 import com.example.simpleWebServer.dto.VideoDTO
 import javax.persistence.*
 
@@ -8,11 +7,11 @@ import javax.persistence.*
 class Video(
     var name: String,
     var type: String,
-    @Basic(fetch = FetchType.LAZY) @Lob var bytes: ByteArray?,
     @ManyToOne(fetch = FetchType.LAZY) var user: User,
+    var path: String,
     @Id @GeneratedValue var id: Long? = null,
 ) : ToDTO {
-    constructor() : this("", "", ByteArray(0), User())
+    constructor() : this("", "", User(), "")
 
     @ManyToMany(fetch = FetchType.LAZY)
     var likes: MutableSet<User> = mutableSetOf()
@@ -26,11 +25,18 @@ class Video(
     var userIthVideo: Int = 0
     var banned: Boolean = false
 
-    @Column(name="video_views")
+    @Column(name = "video_views")
     var views: Int = 0
 
 
     override fun toDTO(): VideoDTO {
-        return VideoDTO(this.name, this.id!!)
+        return VideoDTO(
+            this.name,
+            this.id!!,
+            dislikesNum = this.dislikes.size,
+            likesNum = this.likes.size,
+            tags = this.tags,
+            path = this.path
+        )
     }
 }

@@ -1,6 +1,6 @@
 package com.example.simpleWebServer.entity
 
-import com.example.simpleWebServer.dto.DTO
+import com.example.simpleWebServer.dto.UserDTO
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import javax.persistence.*
 
@@ -29,8 +29,12 @@ class User(
         return BCryptPasswordEncoder().matches(password, this.passwordHash)
     }
 
-    override fun toDTO(): DTO {
-        TODO("Not yet implemented")
+    override fun toDTO(): UserDTO {
+        return UserDTO(
+            id = this.id ?: -1,
+            username = this.username,
+            strike = this.strike,
+        )
     }
 
     override fun equals(other: Any?): Boolean {

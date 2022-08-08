@@ -1,7 +1,6 @@
 package com.example.simpleWebServer.entity
 
 import com.example.simpleWebServer.dto.CommentDTO
-import com.example.simpleWebServer.dto.DTO
 import javax.persistence.*
 
 

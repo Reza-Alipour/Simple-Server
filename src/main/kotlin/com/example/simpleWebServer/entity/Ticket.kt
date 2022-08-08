@@ -1,6 +1,6 @@
 package com.example.simpleWebServer.entity
 
-import com.example.simpleWebServer.dto.DTO
+import com.example.simpleWebServer.dto.TicketDTO
 import javax.persistence.*
 
 @Entity
@@ -9,16 +9,26 @@ class Ticket(
 ) : ToDTO {
     constructor() : this(User())
 
-    @ElementCollection(fetch = FetchType.LAZY)
-    var messages: MutableList<Pair<User, String>> = mutableListOf()
-
-
-    override fun toDTO(): DTO {
-        TODO("Not yet implemented")
+    override fun toDTO(): TicketDTO {
+        return TicketDTO(
+            id = id,
+            state = state,
+            message = "",
+        )
     }
 
 }
 
 enum class TicketState {
     OPEN, CLOSED, IN_PROGRESS, RESOLVED
+}
+
+@Entity
+class MessagePair(
+    @ManyToOne var user: User,
+    @Column(columnDefinition = "TEXT") var message: String,
+    @ManyToOne(cascade = [CascadeType.ALL]) var ticket: Ticket,
+    @Id @GeneratedValue var id: Long? = null
+) {
+    constructor() : this(User(), "", Ticket())
 }
